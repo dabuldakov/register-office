@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service("marriageService")
@@ -42,6 +43,10 @@ public class MarriageManager {
         MarriageCertificate mc = getMarriageCertificate();
         marriagedao.saveAndFlush(mc);
 
+        List<MarriageCertificate> list = marriagedao.findByNumber("sss");
+        list.forEach(i -> LOGGER.info("Id: {} Number: {}", i.getMarriageCertificateId(), i.getNumber()));
+
+        LOGGER.info("-------------");
 
         return new MarriageResponse();
     }
@@ -65,7 +70,7 @@ public class MarriageManager {
 
         MarriageCertificate mc = new MarriageCertificate();
         mc.setActive(true);
-        mc.setNumber("asd222");
+        mc.setNumber("zzz");
         mc.setIssueDate(LocalDate.now());
 
         List<Person> personList = personDao.findPersons();
