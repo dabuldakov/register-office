@@ -44,7 +44,7 @@ create table ro_marriage_certificate(
     husband_id integer not null ,
     wife_id integer not null ,
     active boolean DEFAULT false,
-    end_date date not null,
+    end_date date,
     PRIMARY KEY (marriage_certificate_id),
     FOREIGN KEY (husband_id) REFERENCES ro_person(person_id) on delete restrict,
     FOREIGN KEY (wife_id) REFERENCES ro_person(person_id) on delete restrict

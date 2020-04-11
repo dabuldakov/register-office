@@ -8,11 +8,13 @@ import java.util.List;
 
 public class PersonDaoTest {
 
+    PersonDao personDao;
+
     @Test
     public void findPerson() {
 
-        PersonDao dao = new PersonDao();
-        List<Person> persons = dao.findPersons();
+
+        List<Person> persons = personDao.findAll();
 
         persons.forEach(p -> {
             System.out.println("Name: " + p.getFirstName());

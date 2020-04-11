@@ -8,6 +8,7 @@ import marriage.domain.PersonFemale;
 import marriage.domain.PersonMale;
 import marriage.view.MarriageRequest;
 import marriage.view.MarriageResponse;
+import org.hibernate.criterion.Example;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service("marriageService")
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
@@ -37,13 +39,13 @@ public class MarriageManager {
         LOGGER.info("findMarriageCertificate called");
 
 
-        getPerson(1);
-        getPerson(2);
+        Person female = getPerson(1);
+        Person male = getPerson(2);
 
-        MarriageCertificate mc = getMarriageCertificate();
+        MarriageCertificate mc = getMarriageCertificate(female, male);
         marriagedao.saveAndFlush(mc);
 
-        List<MarriageCertificate> list = marriagedao.findByNumber("sss");
+        List<MarriageCertificate> list = marriagedao.findAll();
         list.forEach(i -> LOGGER.info("Id: {} Number: {}", i.getMarriageCertificateId(), i.getNumber()));
 
         LOGGER.info("-------------");
@@ -51,35 +53,44 @@ public class MarriageManager {
         return new MarriageResponse();
     }
 
-    public void getPerson(int sex) {
+    public Person getPerson(int sex) {
 
         final Logger LOGGER = LoggerFactory.getLogger(MarriageManager.class);
 
-        Person person = sex == 1 ? new PersonMale() : new PersonFemale();
+        Person person = sex == 2 ? new PersonMale() : new PersonFemale();
         person.setFirstName("a_" + sex);
         person.setLastName("b_" + sex);
         person.setPatronymicName("c_" + sex);
         person.setDateOfBirth(LocalDate.of(2007,11,6));
 
-        Long id = personDao.addPerson(person);
-        LOGGER.info("person id: " + id);
+        Person person1 = personDao.saveAndFlush(person);
+        LOGGER.info("person id: " + person1.getPersonId());
 
+        return person1;
     }
 
-    public MarriageCertificate getMarriageCertificate(){
+    public MarriageCertificate getMarriageCertificate(Person female, Person male){
 
         MarriageCertificate mc = new MarriageCertificate();
         mc.setActive(true);
         mc.setNumber("zzz");
         mc.setIssueDate(LocalDate.now());
 
-        List<Person> personList = personDao.findPersons();
-        for (Person person : personList){
-            if(person instanceof PersonMale)
-                mc.setHusband((PersonMale) person);
-            else
+        /*List<Person> all = personDao.findAll();
+
+        for (Person person : all) {
+            if (person instanceof PersonFemale)
                 mc.setWife((PersonFemale) person);
-        }
+            else
+                mc.setHusband((PersonMale) person);
+
+        }*/
+
+        Optional<Person> person1 = personDao.findById(female.getPersonId());
+        person1.ifPresent(person -> mc.setWife((PersonFemale) person));
+
+        Optional<Person> person2 = personDao.findById(male.getPersonId());
+        person2.ifPresent(value -> mc.setHusband((PersonMale) value));
 
         return mc;
 

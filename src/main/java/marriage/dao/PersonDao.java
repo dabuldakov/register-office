@@ -1,28 +1,14 @@
 package marriage.dao;
 
 import marriage.domain.Person;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.*;
 import java.util.List;
 
-@Component
-public class PersonDao {
+@Repository
+public interface PersonDao extends JpaRepository<Person, Long> {
 
-
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    public List<Person> findPersons(){
-        Query query = entityManager.createNamedQuery("getPersons");
-        return query.getResultList();
-    }
-
-    public Long addPerson(Person person){
-
-            entityManager.persist(person);
-            entityManager.flush();
-
-        return person.getPersonId();
-    }
 }
