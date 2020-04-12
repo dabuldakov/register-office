@@ -45,14 +45,14 @@ public class MarriageManager {
         getPassport(male);
 
         MarriageCertificate mc = getMarriageCertificate(female, male);
-        marriagedao.saveAndFlush(mc);
+        MarriageCertificate mcr = marriagedao.saveAndFlush(mc);
 
         List<MarriageCertificate> list = marriagedao.findAll();
         list.forEach(i -> LOGGER.info("Id: {} Number: {}", i.getMarriageCertificateId(), i.getNumber()));
 
         LOGGER.info("-------------");
 
-        return new MarriageResponse();
+        return new MarriageResponse("ADDED", mcr.getMarriageCertificateId().toString(), mcr);
     }
 
     public void getPassport(Person person) {
