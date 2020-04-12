@@ -7,6 +7,8 @@
     <groupId>org.example</groupId>
     <artifactId>register-office</artifactId>
     <version>1.0</version>
+    <packaging>war</packaging>
+
     <build>
         <plugins>
             <plugin>
@@ -26,6 +28,8 @@
         <slf4j.version>1.7.28</slf4j.version>
         <spring.version>5.2.4.RELEASE</spring.version>
         <spring-data.version>2.2.6.RELEASE</spring-data.version>
+
+        <jersey.version></jersey.version>
     </properties>
 
     <dependencies>
@@ -59,6 +63,11 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
+            <version>${spring-data.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
             <version>${spring-data.version}</version>
         </dependency>
 

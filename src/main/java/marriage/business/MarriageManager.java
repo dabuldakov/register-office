@@ -1,11 +1,9 @@
 package marriage.business;
 
 import marriage.dao.MarriageDao;
+import marriage.dao.PassportDao;
 import marriage.dao.PersonDao;
-import marriage.domain.MarriageCertificate;
-import marriage.domain.Person;
-import marriage.domain.PersonFemale;
-import marriage.domain.PersonMale;
+import marriage.domain.*;
 import marriage.view.MarriageRequest;
 import marriage.view.MarriageResponse;
 import org.hibernate.criterion.Example;
@@ -32,7 +30,8 @@ public class MarriageManager {
     private MarriageDao marriagedao;
     @Autowired
     private PersonDao personDao;
-
+    @Autowired
+    private PassportDao passportDao;
 
     @Transactional()
     public MarriageResponse findMarriageCertificate(MarriageRequest request){
@@ -41,6 +40,9 @@ public class MarriageManager {
 
         Person female = getPerson(1);
         Person male = getPerson(2);
+
+        getPassport(female);
+        getPassport(male);
 
         MarriageCertificate mc = getMarriageCertificate(female, male);
         marriagedao.saveAndFlush(mc);
@@ -51,6 +53,20 @@ public class MarriageManager {
         LOGGER.info("-------------");
 
         return new MarriageResponse();
+    }
+
+    public void getPassport(Person person) {
+
+        Passport passport = new Passport();
+        passport.setIssueDepartment("ROVD Leninskoe");
+        passport.setIssuerDate(LocalDate.now());
+        passport.setSeria("6905");
+        passport.setNumber("113111");
+        passport.setPerson(person);
+
+        Passport passport1 = passportDao.saveAndFlush(passport);
+        LOGGER.info("passport id: " + passport1.getPassportId());
+
     }
 
     public Person getPerson(int sex) {
@@ -75,7 +91,8 @@ public class MarriageManager {
         mc.setActive(true);
         mc.setNumber("zzz");
         mc.setIssueDate(LocalDate.now());
-
+        mc.setWife((PersonFemale) female);
+        mc.setHusband((PersonMale) male);
         /*List<Person> all = personDao.findAll();
 
         for (Person person : all) {
@@ -86,11 +103,11 @@ public class MarriageManager {
 
         }*/
 
-        Optional<Person> person1 = personDao.findById(female.getPersonId());
-        person1.ifPresent(person -> mc.setWife((PersonFemale) person));
+        //Optional<Person> person1 = personDao.findById(female.getPersonId());
+      //  person1.ifPresent(person -> mc.setWife((PersonFemale) person));
 
-        Optional<Person> person2 = personDao.findById(male.getPersonId());
-        person2.ifPresent(value -> mc.setHusband((PersonMale) value));
+       // Optional<Person> person2 = personDao.findById(male.getPersonId());
+       // person2.ifPresent(value -> mc.setHusband((PersonMale) value));
 
         return mc;
 
